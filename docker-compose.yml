@@ -1,0 +1,40 @@
+services:
+  # Spark History Server
+  spark-history:
+    image: apache/spark:3.4.1
+    container_name: spark-history-server
+    entrypoint: /bin/bash
+    command: ["-c", "mkdir -p /opt/spark/jars && wget -q -O /opt/spark/jars/spark_2.12-0.8.8.jar https://repo1.maven.org/maven2/io/dataflint/spark_2.12/0.8.8/spark_2.12-0.8.8.jar && export SPARK_DAEMON_CLASSPATH=/opt/spark/jars/spark_2.12-0.8.8.jar && /opt/spark/sbin/start-history-server.sh && tail -f /dev/null"]
+    environment:
+      - SPARK_HISTORY_OPTS=-Dspark.history.ui.port=18080
+    volumes:
+      - ./data/spark-events:/tmp/spark-events
+    ports:
+      - "18080:18080"  # Spark History Server UI
+    networks:
+      - dataflint-network
+
+  # Spark ETL Application
+  spark-etl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spark-etl-app
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./data:/data
+      - ./app:/app
+      - ./data/spark-events:/data/spark-events
+    ports:
+      - "4040:4040"  # Spark UI
+      - "7077:7077"  # Spark Master
+      - "8080:8080"  # Spark Master Web UI
+    networks:
+      - dataflint-network
+    depends_on:
+      - spark-history
+
+networks:
+  dataflint-network:
+    driver: bridge
