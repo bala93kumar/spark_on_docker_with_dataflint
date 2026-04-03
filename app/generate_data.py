@@ -11,8 +11,8 @@ import os
 os.makedirs('/data', exist_ok=True)
 
 # Configuration
-NUM_CUSTOMERS = 500
-NUM_TRANSACTIONS = 10000
+NUM_CUSTOMERS = 10000      # 100x larger (from 100 base)
+NUM_TRANSACTIONS = 2000000  # 200x larger (from 10K base)
 SEED = 42
 
 random.seed(SEED)
@@ -56,7 +56,7 @@ def generate_transactions(customers):
     print("Generating transaction data...")
     
     categories = ["Electronics", "Fashion", "Home", "Sports", "Books", "Beauty", "Toys", "Food", "Automotive", "Health"]
-    products = [f"PROD_{i+1:04d}" for i in range(100)]
+    products = [f"PROD_{i+1:05d}" for i in range(1000)]
     
     transactions = []
     base_date = datetime.now() - timedelta(days=365)

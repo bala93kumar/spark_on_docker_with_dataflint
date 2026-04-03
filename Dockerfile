@@ -24,7 +24,8 @@ RUN mkdir -p /data/output
 # Download DataFlint JAR to /app (avoid Ivy cache permission issues)
 RUN wget -q -O /app/spark_2.12-0.8.8.jar https://repo1.maven.org/maven2/io/dataflint/spark_2.12/0.8.8/spark_2.12-0.8.8.jar
 
-USER spark
+# Run as root for entrypoint (needs to create/chmod directories)
+USER root
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
